@@ -42,8 +42,9 @@ class DeckServer {
         Loop random.Size
             this.Token .= Format("{:02x}", NumGet(random, A_Index - 1, "UChar"))
 
-        for ip in ["127.0.0.1", "localhost", A_IPAddress1, A_IPAddress2,
-            A_IPAddress3, A_IPAddress4] {
+        addresses := SysGetIPAddresses()
+        addresses.Push("127.0.0.1", "localhost")
+        for ip in addresses {
             if ip = "" || ip = "0.0.0.0"
                 continue
             this.Hosts[StrLower(ip ":" this.Port)] := true
