@@ -218,10 +218,22 @@ class DeckServer {
                     case "discord-missing": status := "File not found: C:\discord.exe"
                     case "notepad-missing": status := "File not found: C:\notepad.exe"
                     case "apple-music-missing": status := "File not found: C:\AppleMusic.exe"
+                    case "mute": status := "Mute updated."
+                    case "mute-failed": status := "Windows could not change mute. Check your audio output device."
                     case "failed": status := "Windows could not launch the app. Check its path and permissions."
                 }
             }
+            ; Read Windows state on every page load, including after a toggle.
+            muteLabel := "Mute: unavailable (tap to retry)"
+            mutePressed := "mixed"
+            try {
+                muted := SoundGetMute()
+                muteLabel := muted ? "Mute: ON (tap to unmute)" : "Mute: OFF (tap to mute)"
+                mutePressed := muted ? "true" : "false"
+            }
             page := StrReplace(StrReplace(this.Template, "{{TOKEN}}", this.Token), "{{STATUS}}", status)
+            page := StrReplace(page, "{{MUTE_LABEL}}", muteLabel)
+            page := StrReplace(page, "{{MUTE_PRESSED}}", mutePressed)
             this.Reply(client, "200 OK", page, "text/html; charset=utf-8")
             return
         }
@@ -250,6 +262,16 @@ class DeckServer {
         ; Only these fixed commands can launch anything. Never execute request text.
         command := form[2]
         switch command {
+            case "mute":
+                try {
+                    SoundSetMute(-1) ; Master mute on the default playback device.
+                    result := "mute"
+                } catch {
+                    result := "mute-failed"
+                }
+                this.Reply(client, "303 See Other", "Returning to Kindle Deck.",
+                    "text/plain; charset=utf-8", "Location: /?status=" result "`r`n")
+                return
             case "discord": executable := "C:\discord.exe"
             case "notepad": executable := "C:\notepad.exe"
             case "apple-music": executable := "C:\AppleMusic.exe"

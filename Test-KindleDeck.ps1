@@ -58,7 +58,13 @@ foreach ($command in 'discord', 'notepad', 'apple-music') {
         throw "Missing button: $command"
     }
 }
-Write-Host 'PASS: All three buttons and the form token'
+if ($deckPage -notmatch 'name="command" value="mute" aria-pressed="(true|false|mixed)"') {
+    throw 'Missing mute toggle or rendered mute state.'
+}
+if ($deckPage -match '\{\{MUTE_') { throw 'Unrendered mute placeholder.' }
+Write-Host 'PASS: Three app buttons, mute toggle, and the form token'
+Assert-Status (Send-DeckRequest -Method POST -Path '/launch' -Body "token=$('0' * 63)&command=mute") 400 'Malformed mute token rejected'
+Assert-Status (Send-DeckRequest -Path '/?status=mute') 200 'Mute result page is a safe GET' 
 Assert-Status (Send-DeckRequest -Path '/launch') 405 'GET cannot launch an app'
 Assert-Status (Send-DeckRequest -Path '/missing') 404 'Unknown route'
 Assert-Status (Send-DeckRequest -RequestHost "untrusted.example:$Port") 403 'Unknown Host rejected'

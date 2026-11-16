@@ -1,12 +1,14 @@
 # Kindle Deck
 
-A three-button LAN launcher for a Kindle Paperwhite 11th generation (user firmware: 5.20.1) and a Windows computer running AutoHotkey v2.
+A LAN launcher with three app buttons and one master mute toggle for a Kindle Paperwhite 11th generation (user firmware: 5.20.1) and a Windows computer running AutoHotkey v2.
 
 | Button | Executable |
 | --- | --- |
 | discord | `C:\discord.exe` |
 | notepad | `C:\notepad.exe` |
 | apple music | `C:\AppleMusic.exe` |
+
+The fourth button shows **Mute: ON** or **Mute: OFF** and toggles the Windows default playback device's master mute with one tap. Its state is read from Windows on every page load and after each tap; refresh to see changes made on the PC. If Windows cannot read or change the audio device, the page shows an unavailable/error message. This controls speaker/headphone output, not microphone mute. Like app launches, toggling uses POST followed by a redirect, so refreshing does not toggle again.
 
 ## Start on Windows
 
@@ -40,15 +42,15 @@ The page uses large black-and-white buttons, basic CSS, and standard HTML forms.
 
 ## Scope and implementation
 
-The script listens on the PC's IPv4 interfaces. This is intended for a trusted home LAN; devices that can reach the page can use the three buttons. Keep firewall access restricted to your private LAN. Router port forwarding and cloud hosting are unnecessary.
+The script listens on the PC's IPv4 interfaces. This is intended for a trusted home LAN; devices that can reach the page can use all four buttons. Keep firewall access restricted to your private LAN. Router port forwarding and cloud hosting are unnecessary.
 
-Only the three fixed command names are accepted. Request text is never passed to a shell or used as an executable path. Forms contain a random, per-run token; command execution requires POST with that token. The server checks Host against the PC's startup IPv4 addresses and loopback, limits request size and connection count, and expires incomplete connections. These checks do not provide separate user authentication.
+Only the three fixed app command names and the `mute` command are accepted. Request text is never passed to a shell or used as an executable path. Forms contain a random, per-run token; command execution requires POST with that token. The server checks Host against the PC's startup IPv4 addresses and loopback, limits request size and connection count, and expires incomplete connections. These checks do not provide separate user authentication.
 
 The server uses native [Windows Winsock nonblocking sockets](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket) through AutoHotkey `DllCall`, with a short timer to accept/read/write connections. It handles fragmented requests and [partial sends](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-send). There are no third-party script libraries.
 
 ## Verification boundary
 
-Development is on Linux. Static checks verified the three button labels, POST form wiring, token placeholders, and exact executable mappings. This environment blocks local listening ports and browser launch, and its connected browser is unavailable, so visual/browser checks were not completed. AutoHotkey v2 and the Windows application paths cannot be executed here, and the physical Kindle is unavailable.
+Development is on Linux. Static checks verified the three app buttons, mute toggle and rendered ON/OFF/unavailable states, POST form wiring, token placeholders, and exact executable mappings. This environment blocks local listening ports and browser launch, and its connected browser is unavailable, so visual/browser checks were not completed. AutoHotkey v2 and the Windows application paths cannot be executed here, and the physical Kindle is unavailable.
 
 With `KindleDeck.ahk` running on Windows, optionally run this from the project folder in PowerShell:
 
