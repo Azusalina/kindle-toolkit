@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Kindle Deck</title>
+  <style>
+    html { background: #fff; color: #000; font-family: sans-serif; }
+    body { margin: 0 auto; padding: 20px; max-width: 620px; }
+    h1 { margin: 0 0 8px; font-size: 26px; font-weight: normal; }
+    .hint { margin: 0 0 16px; font-size: 16px; }
+    .status { min-height: 44px; margin: 0 0 18px; padding: 12px;
+      border: 2px solid #000; font-size: 18px; line-height: 1.4; }
+    form { margin: 0; padding: 0; }
+    button { display: block; width: 100%; min-height: 110px; margin: 0 0 18px;
+      padding: 24px 12px; border: 3px solid #000; border-radius: 0;
+      background: #fff; color: #000; font-family: sans-serif; font-size: 28px;
+      line-height: 1.3; font-weight: bold; cursor: pointer;
+      -webkit-appearance: none; box-sizing: border-box; }
+    button:active { background: #000; color: #fff; }
+    button:focus { outline: 3px dashed #000; outline-offset: 3px; }
+    .footer { margin: 8px 0 0; font-size: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <h1>Kindle Deck</h1>
+  <p class="hint">Tap an app to open it on your computer.</p>
+  <p class="status" role="status" aria-live="polite">{{STATUS}}</p>
+  <form method="post" action="/launch" accept-charset="UTF-8">
+    <input type="hidden" name="token" value="{{TOKEN}}">
+    <button type="submit" name="command" value="discord">discord</button>
+    <button type="submit" name="command" value="notepad">notepad</button>
+    <button type="submit" name="command" value="apple-music">apple music</button>
+  </form>
+  <p class="footer">Keep the computer awake and Kindle Deck running.</p>
+</body>
+</html>
